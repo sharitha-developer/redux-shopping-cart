@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toggleActions } from "./cart-toggle";
 
 const initialState = { items: [], totalQuantity: 0 }
 
@@ -20,9 +21,9 @@ const addToCartSlice = createSlice({
                     total: newProduct.price * 1,
                     quantity: 1
                 })
-                state.totalQuantity++;
+              
             }
-            
+              state.totalQuantity++;
         },
         removeItem(state, action) {
             const proId = action.payload;
@@ -38,6 +39,16 @@ const addToCartSlice = createSlice({
         }
     }
 });
+
+const sendCartData = (cartData) => {
+    return (dispatch) => { 
+       dispatch(toggleActions.showNotification({
+        status: 'pending',
+        title: 'sending',
+        message: 'Sending cart data!',
+      }))
+     }
+}
 
 export const addToCartAction = addToCartSlice.actions;
 
