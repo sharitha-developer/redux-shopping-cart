@@ -1,15 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { toggleActions } from "./cart-toggle";
 
-const initialState = { items: [], totalQuantity: 0 }
+
+const initialState = { items: [], totalQuantity: 0, changed: false }
 
 const addToCartSlice = createSlice({
     name: 'Adding to the cart',
     initialState,
     reducers: {
+        replaceCart(state, action) {
+            state.totalQuantity = action.payload.totalQuantity;
+            state.items = action.payload.items
+        },
         addItem(state, action) {
             const newProduct = action.payload;
             const existingItem = state.items.find(item => item.id === newProduct.id);
+            state.changed = true;
             if (existingItem) {
                 existingItem.quantity++;
                 existingItem.total = existingItem.quantity * existingItem.price;
@@ -21,34 +26,28 @@ const addToCartSlice = createSlice({
                     total: newProduct.price * 1,
                     quantity: 1
                 })
-              
+
             }
-              state.totalQuantity++;
+            state.totalQuantity++;
         },
         removeItem(state, action) {
             const proId = action.payload;
             const existingItem = state.items.find(item => item.id === proId.id);
             if (existingItem.quantity <= 1) {
                 state.items = state.items.filter(item => item.id !== existingItem.id);
-                 state.totalQuantity++;
-           
+                state.totalQuantity++;
+
             } else {
                 existingItem.quantity--;
                 existingItem.total = existingItem.quantity * existingItem.price;
+                state.totalQuantity--;
+
             }
         }
     }
 });
 
-const sendCartData = (cartData) => {
-    return (dispatch) => { 
-       dispatch(toggleActions.showNotification({
-        status: 'pending',
-        title: 'sending',
-        message: 'Sending cart data!',
-      }))
-     }
-}
+
 
 export const addToCartAction = addToCartSlice.actions;
 
